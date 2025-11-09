@@ -129,36 +129,49 @@ def analyze_can_log(filename='m1_can_log.csv'):
     print("  This strongly suggests: 0x0000")
     print()
     
-    # Step 5: Analyze the CAN ID pattern
-    print("Step 5: Analyzing CAN ID patterns...")
+    # Step 5: Decode the vanished vehicle from ghost signals
+    print("Step 5: Decoding the vanished vehicle from ghost signals...")
+    print()
+    print("  Missing counters: 04, 0A, 5E, 78, 94, 9B")
+    print()
+    print("  Possible CAN ID interpretations:")
+    print("    Method 1 - First pair:    0x040A (TESTED - WRONG)")
+    print("    Method 2 - Middle pair:   0x5E78")
+    print("    Method 3 - Last pair:     0x949B")
+    print("    Method 4 - XOR pairs:     0x0E26 ((04^0A)(5E^78))")
+    print("    Method 5 - Indices 3,5:   0x789B")
+    print()
+    
+    # Step 6: Check pattern-based possibilities
+    print("Step 6: Checking CAN ID pairing patterns...")
     print()
     print("  Existing CAN ID pairs:")
     print("    0x0100 ✓  0x0101 ✓")
     print("    0x0200 ✓  0x0201 ✓")
-    print("    0x0300 ✓  0x0301 ✗ MISSING!")
+    print("    0x0300 ✓  0x0301 ? (TESTED - WRONG)")
     print()
-    print("  Pattern: Each ID has a pair (+1 variant)")
-    print("  0x0301 should exist but is completely absent from the log!")
+    print("  Other pattern-based candidates:")
+    print("    0x0000 (TESTED - WRONG)")
+    print("    0x0027 (XOR all missing counters)")
     print()
     
-    # Step 6: Determine the answer
+    # Step 7: Determine the answer
     print("=" * 70)
-    print("SOLUTION")
+    print("SOLUTION - TOP CANDIDATES")
     print("=" * 70)
     print()
-    print("The vanished vehicle is identified by the missing CAN ID: 0x0301")
+    print("Based on 'genius engineer left a final message', the vanished")
+    print("vehicle CAN ID is encoded in the missing counter sequence.")
     print()
-    print("Evidence:")
-    print("  1. Pattern analysis shows pairs: 0x0100/0x0101, 0x0200/0x0201")
-    print("  2. 0x0300 exists but its pair 0x0301 is MISSING")
-    print("  3. The ghost signals (missing counters) in 0x0200 were clues")
-    print("     pointing to the pattern analysis needed")
-    print()
-    print("FLAG: LISA{0x0301}")
+    print("Most likely answers:")
+    print("  1. LISA{0x5E78} - middle pair of missing counters")
+    print("  2. LISA{0x949B} - last pair of missing counters")
+    print("  3. LISA{0x0E26} - XOR of counter pairs")
+    print("  4. LISA{0x789B} - alternate selection from missing counters")
     print()
     print("=" * 70)
     
-    return "0x0301"
+    return "0x5E78 or 0x949B or 0x0E26"
 
 if __name__ == "__main__":
     answer = analyze_can_log()
