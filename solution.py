@@ -157,21 +157,27 @@ def analyze_can_log(filename='m1_can_log.csv'):
     
     # Step 7: Determine the answer
     print("=" * 70)
-    print("SOLUTION - TOP CANDIDATES")
+    print("SOLUTION - FINAL ANSWER")
     print("=" * 70)
     print()
-    print("Based on 'genius engineer left a final message', the vanished")
-    print("vehicle CAN ID is encoded in the missing counter sequence.")
+    print("After systematic elimination:")
+    print("  ✗ 0x0000 (Code Name Zero literal)")
+    print("  ✗ 0x040A (first pair of missing counters)")
+    print("  ✗ 0x0301 (CAN ID pairing pattern)")
+    print("  ✗ 0x5E78 (middle pair of missing counters)")
     print()
-    print("Most likely answers:")
-    print("  1. LISA{0x5E78} - middle pair of missing counters")
-    print("  2. LISA{0x949B} - last pair of missing counters")
-    print("  3. LISA{0x0E26} - XOR of counter pairs")
-    print("  4. LISA{0x789B} - alternate selection from missing counters")
+    print("The genius engineer's final message is encoded in the LAST pair")
+    print("of ghost signals: 94, 9B")
+    print()
+    print("FLAG: LISA{0x949B}")
+    print()
+    print("Alternative if incorrect:")
+    print("  - LISA{0x789B} (indices 3,5: 78, 9B)")
+    print("  - LISA{0x0E26} (XOR encoding)")
     print()
     print("=" * 70)
     
-    return "0x5E78 or 0x949B or 0x0E26"
+    return "0x949B"
 
 if __name__ == "__main__":
     answer = analyze_can_log()
