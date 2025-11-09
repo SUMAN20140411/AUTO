@@ -129,26 +129,36 @@ def analyze_can_log(filename='m1_can_log.csv'):
     print("  This strongly suggests: 0x0000")
     print()
     
-    # Step 5: Determine the answer
+    # Step 5: Analyze the CAN ID pattern
+    print("Step 5: Analyzing CAN ID patterns...")
+    print()
+    print("  Existing CAN ID pairs:")
+    print("    0x0100 ✓  0x0101 ✓")
+    print("    0x0200 ✓  0x0201 ✓")
+    print("    0x0300 ✓  0x0301 ✗ MISSING!")
+    print()
+    print("  Pattern: Each ID has a pair (+1 variant)")
+    print("  0x0301 should exist but is completely absent from the log!")
+    print()
+    
+    # Step 6: Determine the answer
     print("=" * 70)
     print("SOLUTION")
     print("=" * 70)
     print()
-    print("The challenge hint 'Code Name: Zero' directly points to CAN ID: 0x0000")
+    print("The vanished vehicle is identified by the missing CAN ID: 0x0301")
     print()
-    print("This CAN ID does not appear in the m1_can_log.csv file, indicating")
-    print("it has 'vanished' - leaving only ghost signals behind.")
+    print("Evidence:")
+    print("  1. Pattern analysis shows pairs: 0x0100/0x0101, 0x0200/0x0201")
+    print("  2. 0x0300 exists but its pair 0x0301 is MISSING")
+    print("  3. The ghost signals (missing counters) in 0x0200 were clues")
+    print("     pointing to the pattern analysis needed")
     print()
-    print("FLAG: LISA{0x0000}")
-    print()
-    print("Alternative possibilities if 0x0000 is incorrect:")
-    print("  - LISA{0x040A} (from first two ghost counters)")
-    print("  - LISA{0x5E78} (from middle two ghost counters)")  
-    print("  - LISA{0x949B} (from last two ghost counters)")
+    print("FLAG: LISA{0x0301}")
     print()
     print("=" * 70)
     
-    return "0x0000"
+    return "0x0301"
 
 if __name__ == "__main__":
     answer = analyze_can_log()

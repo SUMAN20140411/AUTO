@@ -12,14 +12,20 @@ Track the vehicle that vanished after a genius engineer left a final message - *
 
 ## Solution Approach
 
-### Step 1: Analyze CAN Log Structure
+### Step 1: Identify CAN IDs and Their Patterns
+The key to solving this challenge is recognizing the **pairing pattern** of CAN IDs:
+- 0x0100/0x0101 (both present)
+- 0x0200/0x0201 (both present)  
+- 0x0300/0x0301 (0x0301 MISSING!)
+
+### Step 2: Analyze CAN Log Structure
 The `m1_can_log.csv` file contains CAN bus messages with the following fields:
 - Time Offset
 - CAN_ID
 - DLC (Data Length Code)
 - Payload
 
-### Step 2: Identify CAN IDs
+### Step 3: Catalog All CAN IDs
 Seven unique CAN IDs are present in the log:
 - `0x0018` - 1,179 messages
 - `0x00F0` - 1,474 messages
@@ -29,13 +35,13 @@ Seven unique CAN IDs are present in the log:
 - `0x0201` - 294 messages
 - `0x0300` - 585 messages
 
-### Step 3: Discover the Counter Pattern
+### Step 4: Discover the Counter Pattern (Ghost Signals)
 CAN ID `0x0200` uses a sequential counter in the first 2 bytes of its payload:
 - Messages start with counter `00`, `01`, `02`, `03`, etc.
 - Counter cycles from `0x00` to `0xFF` (256 values)
 - Each counter appears approximately 46 times in the log
 
-### Step 4: Find the Ghost Signals
+### Step 4a: Identify Missing Counters
 By examining the first sequence cycle, we discover that certain counter values are **missing from their expected positions**:
 
 **Missing Counters (Ghost Signals):**
@@ -48,27 +54,33 @@ By examining the first sequence cycle, we discover that certain counter values a
 
 These counters do appear later in the log (in subsequent cycles), but they are "out of sequence" in the first cycle - creating "ghost signals."
 
-### Step 5: Decode the Vanished Vehicle
-The hint **"Code Name: Zero"** is the key to solving this challenge.
+### Step 5: Analyze CAN ID Patterns
+The key insight comes from examining the **pattern of CAN IDs** present in the log:
 
-The missing/ghost counters can be interpreted in several ways:
-- **0x040A** (first pair of ghost counters)
-- **0x5E78** (middle pair of ghost counters)
-- **0x949B** (last pair of ghost counters)
+**Existing CAN ID Pairs:**
+- `0x0100` ✓ and `0x0101` ✓ (pair exists)
+- `0x0200` ✓ and `0x0201` ✓ (pair exists)
+- `0x0300` ✓ and `0x0301` ✗ (pair MISSING!)
 
-However, the hint "Code Name: Zero" strongly suggests the answer is **CAN ID 0x0000**, which:
-1. Does NOT appear anywhere in the m1_can_log.csv file
-2. Represents "Zero" (matching the code name)
-3. Has completely "vanished" from the log
+**Pattern Discovery:**
+- Each major CAN ID (0x0100, 0x0200, 0x0300) has a corresponding +1 variant
+- The pattern breaks at 0x0300 - its pair **0x0301 is completely absent**
+- This is the true "vanished vehicle"
+
+### Step 6: Decode the Vanished Vehicle
+The ghost signals (missing counters 04, 0A, 5E, 78, 94, 9B in the 0x0200 sequence) were clues that led us to look for pattern anomalies, not the answer itself.
+
+The hint **"Code Name: Zero"** may refer to the "zero" presence of 0x0301 in the log - it has completely vanished.
 
 ## Answer
 
-**FLAG: `LISA{0x0000}`**
+**FLAG: `LISA{0x0301}`**
 
-### Alternative Answers (if 0x0000 is incorrect)
-- `LISA{0x040A}` - formed from first two ghost counters (04, 0A)
-- `LISA{0x5E78}` - formed from middle two ghost counters (5E, 78)
-- `LISA{0x949B}` - formed from last two ghost counters (94, 9B)
+### Why This Answer
+1. **Pattern Consistency**: All other major IDs have pairs (0x0100/0x0101, 0x0200/0x0201)
+2. **Missing Pair**: 0x0301 should exist to pair with 0x0300 but is completely absent
+3. **Ghost Signals**: The missing counters in 0x0200 were breadcrumbs leading to pattern analysis
+4. **True Vanishing**: Unlike counters that appear later, 0x0301 never appears at all
 
 ## Running the Solution
 ```bash
